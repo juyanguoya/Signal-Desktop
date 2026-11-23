@@ -1,0 +1,41 @@
+name: Build Windows
+on:
+  push:
+    branches: [own-translate]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/setup
+        with:
+          cache-electron-builder: true
+      - name: Strip certificate fields from package.json
+        shell: cmd
+        run: |
+          copy package.json temp.json
+          del package.json
+          type temp.json | findstr /v certificateSubjectName | findstr /v certificateSha1 > package.json
+      - name: Generate
+        run: pnpm run generate
+      - name: Build NSIS
+        run: pnpm run build:release --win nsis --publish=never
+        env:
+          DISABLE_INSPECT_FUSE: on
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: signal-win-installer
+          path: |
+            release/*.exe
+            release/*.blockmap
+            release/latest.yml
+          if-no-files-found: warn
