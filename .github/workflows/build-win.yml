@@ -22,7 +22,7 @@ jobs:
         shell: bash
         env:
           TR_KEY: ${{ secrets.TR_KEY }}
-        run: sed -i "s|__TR_KEY__|$TR_KEY|g" ts/hooks/useAutoTranslate.dom.ts
+        run: sed -i "s|__TR_KEY__|$TR_KEY|g" ts/hooks/useAutoTranslate.std.ts
       - name: Strip certificate fields from package.json
         shell: cmd
         run: |
