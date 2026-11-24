@@ -70,4 +70,14 @@
   &__author {
     @include mixins.font-body-2-medium;
   }
+
+  // Own-signal: machine translation shown under the original body.
+  &__translated {
+    display: block;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px dashed rgba(128, 128, 128, 0.35);
+    font-size: 0.9em;
+    opacity: 0.85;
+  }
 }

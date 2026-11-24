@@ -8,12 +8,13 @@ import type { ShowConversationType } from '../../state/ducks/conversations.prelo
 import type { HydratedBodyRangesType } from '../../types/BodyRange.std.ts';
 import type { LocalizerType } from '../../types/Util.std.ts';
 import { MessageTextRenderer } from './MessageTextRenderer.dom.tsx';
-import type { RenderLocation } from './MessageTextRenderer.dom.tsx';
+import { RenderLocation } from './MessageTextRenderer.dom.tsx';
 import { UserText } from '../UserText.dom.tsx';
 import { shouldLinkifyMessage } from '../../types/LinkPreview.std.ts';
 import { FunJumboEmojiSize } from '../fun/FunEmoji.dom.tsx';
 import { Emoji } from '../../axo/emoji.std.ts';
 import { missingCaseError } from '../../util/missingCaseError.std.ts';
+import { useAutoTranslate } from '../../hooks/useAutoTranslate.dom.ts';
 
 function getSizeClass(str: string): FunJumboEmojiSize | null {
   const count = Emoji.getJumboEmojiCount(str);
@@ -94,6 +95,12 @@ export function MessageBody({
       : text;
 
   const sizeClass = disableJumbomoji ? null : getSizeClass(text);
+
+  // Own-signal: auto-translate non-Chinese message bodies in the timeline.
+  const translatedText = useAutoTranslate(
+    text,
+    renderLocation === RenderLocation.Timeline
+  );
 
   let endNotification: ReactNode;
   if (onIncreaseTextLength) {
@@ -187,6 +194,10 @@ export function MessageBody({
       />
 
       {endNotification}
+
+      {translatedText ? (
+        <span className="MessageBody__translated">{translatedText}</span>
+      ) : null}
     </span>
   );
 }
