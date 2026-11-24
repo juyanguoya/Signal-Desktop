@@ -38,9 +38,9 @@ function release(): void {
 
 function extractTranslation(data: unknown): string | null {
   if (Array.isArray(data) && Array.isArray(data[0])) {
-    const segments = data[0] as unknown[];
+    const segments = data[0] as Array<unknown>;
     if (Array.isArray(segments[0])) {
-      const first = (segments[0] as unknown[])[0];
+      const first = (segments[0] as Array<unknown>)[0];
       if (typeof first === 'string' && first.length > 0) {
         return first;
       }
@@ -106,17 +106,21 @@ export function useAutoTranslate(
   const [result, setResult] = useState<string | null>(null);
 
   useEffect(() => {
+    // Reset the previous translation so a stale result never shows while
+    // the new text is being translated.
+    // eslint-disable-next-line react/set-state-in-effect
     setResult(null);
     const trimmed = text.trim();
     if (!enabled || trimmed.length === 0 || isMostlyChinese(trimmed)) {
       return undefined;
     }
     let cancelled = false;
-    void translateText(trimmed, 'auto', 'zh').then(out => {
+    void (async () => {
+      const out = await translateText(trimmed, 'auto', 'zh');
       if (!cancelled) {
         setResult(out);
       }
-    });
+    })();
     return () => {
       cancelled = true;
     };

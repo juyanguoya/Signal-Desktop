@@ -14,7 +14,7 @@ import { shouldLinkifyMessage } from '../../types/LinkPreview.std.ts';
 import { FunJumboEmojiSize } from '../fun/FunEmoji.dom.tsx';
 import { Emoji } from '../../axo/emoji.std.ts';
 import { missingCaseError } from '../../util/missingCaseError.std.ts';
-import { useAutoTranslate } from '../../hooks/useAutoTranslate.dom.ts';
+import { useAutoTranslate } from '../../hooks/useAutoTranslate.std.ts';
 
 function getSizeClass(str: string): FunJumboEmojiSize | null {
   const count = Emoji.getJumboEmojiCount(str);
